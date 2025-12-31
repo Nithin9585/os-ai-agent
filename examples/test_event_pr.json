@@ -1,0 +1,24 @@
+{
+  "action": "opened",
+  "pull_request": {
+    "html_url": "https://github.com/example/repo/pull/42",
+    "title": "Fix race condition in event scheduler",
+    "body": "This PR fixes a critical race condition that was causing events to be processed out of order.\n\n## Problem\nThe event queue wasn't thread-safe, leading to occasional crashes under high load.\n\n## Solution\n- Added proper locking mechanism using `threading.Lock()`\n- Implemented queue prioritization\n- Added comprehensive tests\n\n## Testing\n- All existing tests pass\n- Added 5 new test cases for concurrent scenarios\n- Load tested with 1000 concurrent requests",
+    "url": "https://api.github.com/repos/example/repo/pulls/42",
+    "user": {
+      "login": "yourusername"
+    },
+    "created_at": "2025-12-31T10:00:00Z",
+    "updated_at": "2025-12-31T10:00:00Z"
+  },
+  "repository": {
+    "full_name": "example/repo",
+    "name": "repo",
+    "owner": {
+      "login": "example"
+    }
+  },
+  "sender": {
+    "login": "yourusername"
+  }
+}

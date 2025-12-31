@@ -1,0 +1,31 @@
+{
+    "action": "opened",
+    "issue": {
+        "html_url": "https://github.com/example/repo/issues/123",
+        "title": "Add dark mode support",
+        "body": "## Feature Request\n\nMany users have requested dark mode support for better accessibility and reduced eye strain.\n\n## Proposed Solution\n- Add theme toggle in settings\n- Implement CSS variables for theming\n- Persist user preference in localStorage\n- Support system preference detection\n\n## Benefits\n- Improved accessibility\n- Better user experience\n- Modern UI standard\n\n## Additional Context\nThis has been requested by 50+ users in various discussions.",
+        "user": {
+            "login": "yourusername"
+        },
+        "created_at": "2025-12-31T10:00:00Z",
+        "updated_at": "2025-12-31T10:00:00Z",
+        "labels": [
+            {
+                "name": "enhancement"
+            },
+            {
+                "name": "good first issue"
+            }
+        ]
+    },
+    "repository": {
+        "full_name": "example/repo",
+        "name": "repo",
+        "owner": {
+            "login": "example"
+        }
+    },
+    "sender": {
+        "login": "yourusername"
+    }
+}
