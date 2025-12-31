@@ -258,7 +258,7 @@ Repository: {repo}
 Title: {title}
 
 Description:
-{body[:1000]}
+{body[:5000]}
 
 {diff_part}
 
