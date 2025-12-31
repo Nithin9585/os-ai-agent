@@ -18,14 +18,14 @@ from typing import Dict, Optional, Tuple
 
 # Configuration
 GITHUB_EVENT_PATH = os.getenv("GITHUB_EVENT_PATH")
-GITHUB_TOKEN = os.getenv("GITHUB_TOKEN") or os.getenv("OS_GITHUB_TOKEN")
+GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 AI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # X API OAuth 1.0a credentials
 X_ACCESS_TOKEN = os.getenv("ACESS_TOKEN")
 X_ACCESS_TOKEN_SECRET = os.getenv("ACESS_TOKEN_SECRET")
 X_CONSUMER_KEY = os.getenv("X_API_KEY")
-X_CONSUMER_SECRET = os.getenv("OS_X_API_KEY_SECRET")
+X_CONSUMER_SECRET = os.getenv("X_API_KEY_SECRET")
 
 # AI API Configuration (Google Gemini)
 AI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
@@ -45,7 +45,7 @@ def validate_environment() -> None:
         "ACESS_TOKEN": X_ACCESS_TOKEN,
         "ACESS_TOKEN_SECRET": X_ACCESS_TOKEN_SECRET,
         "X_API_KEY": X_CONSUMER_KEY,
-        "OS_X_API_KEY_SECRET": X_CONSUMER_SECRET,
+        "X_API_KEY_SECRET": X_CONSUMER_SECRET,
     }
     
     missing = [var for var, value in required_vars.items() if not value]
