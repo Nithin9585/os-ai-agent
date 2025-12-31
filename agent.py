@@ -28,7 +28,7 @@ X_CONSUMER_KEY = os.getenv("X_API_KEY")
 X_CONSUMER_SECRET = os.getenv("X_API_KEY_SECRET")
 
 # AI API Configuration (Google Gemini)
-AI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+AI_API_URL = "https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent"
 AI_MODEL = "gemini-1.5-flash"
 AI_TEMPERATURE = 0.7
 
