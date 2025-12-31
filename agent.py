@@ -134,34 +134,40 @@ def load_system_prompt() -> str:
 def call_ai(system_prompt: str, user_prompt: str) -> str:
     """Call AI API to analyze the event and generate response."""
     try:
-        combined_prompt = f"{system_prompt}\n\n{user_prompt}"
+        combined_prompt = f"{system_prompt}\n\n{user_prompt}\n\nREMINDER: Output MUST be long (approx 280 chars). Do not be brief."
         
-        payload = {
-            "contents": [{
-                "parts": [{
-                    "text": combined_prompt
-                }]
-            }],
-            "generationConfig": {
-                "temperature": AI_TEMPERATURE,
-                "maxOutputTokens": 300
+        # Retry loop for length (Max 2 retries)
+        for i in range(2):
+            payload = {
+                "contents": [{"parts": [{"text": combined_prompt}]}],
+                "generationConfig": {
+                    "temperature": AI_TEMPERATURE,
+                    "maxOutputTokens": 600
+                }
             }
-        }
+            
+            headers = {
+                "Content-Type": "application/json"
+            }
+            
+            api_url_with_key = f"{AI_API_URL}?key={AI_API_KEY}"
+            
+            print(f"Calling Gemini AI API (Attempt {i+1})...")
+            response = requests.post(api_url_with_key, headers=headers, json=payload, timeout=30)
+            response.raise_for_status()
+            
+            result = response.json()
+            ai_response = result["candidates"][0]["content"]["parts"][0]["text"].strip()
+            
+            if len(ai_response) >= 240:
+                break
+            else:
+                print(f"Response too short ({len(ai_response)} chars). Retrying...")
+                combined_prompt += "\n\nFEEDBACK: Too short! Follow the STRUCTURE from the prompt. Each section must be filled. Aim for 250-280 chars total."
         
-        headers = {
-            "Content-Type": "application/json"
-        }
-        
-        api_url_with_key = f"{AI_API_URL}?key={AI_API_KEY}"
-        
-        print("Calling Gemini AI API...")
-        response = requests.post(api_url_with_key, headers=headers, json=payload, timeout=30)
-        response.raise_for_status()
-        
-        result = response.json()
-        ai_response = result["candidates"][0]["content"]["parts"][0]["text"].strip()
-        
-        print(f"AI Response: {ai_response[:100]}...")
+        print("-" * 40)
+        print(f"FULL TWEET:\n{ai_response}")
+        print("-" * 40)
         return ai_response
         
     except requests.RequestException as e:
