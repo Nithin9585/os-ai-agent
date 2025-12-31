@@ -250,6 +250,8 @@ def main():
     
     system_prompt = load_system_prompt()
     
+    diff_part = f"Diff Summary:\n{diff_summary}" if diff_summary else ""
+    
     user_prompt = f"""
 Event Type: {event_type}
 Repository: {repo}
@@ -258,7 +260,7 @@ Title: {title}
 Description:
 {body[:1000]}
 
-{f"Diff Summary:\n{diff_summary}" if diff_summary else ""}
+{diff_part}
 
 Link: {link}
 """
