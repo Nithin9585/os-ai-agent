@@ -57,6 +57,11 @@ def filter_relevant_events(events, last_timestamp):
     relevant_actions = ["opened", "reopened"]
     
     filtered = []
+    
+    # Handle timezone properly - add Z if missing
+    if not last_timestamp.endswith('Z') and '+' not in last_timestamp:
+        last_timestamp = last_timestamp + 'Z'
+    
     last_ts = datetime.fromisoformat(last_timestamp.replace('Z', '+00:00'))
     
     for event in events:
