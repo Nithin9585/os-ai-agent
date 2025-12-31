@@ -87,13 +87,13 @@ def extract_event_data(event: Dict) -> Optional[Tuple[str, str, str, str, str]]:
     if is_pr:
         pr = event["pull_request"]
         link = pr["html_url"]
-        title = pr["title"]
+        title = pr.get("title") or "No Title"
         body = pr.get("body", "") or ""
         diff_summary = fetch_pr_diff(pr["url"])
     else:
         issue = event["issue"]
         link = issue["html_url"]
-        title = issue["title"]
+        title = issue.get("title") or "No Title"
         body = issue.get("body", "") or ""
         diff_summary = ""
     
@@ -145,7 +145,7 @@ def call_ai(system_prompt: str, user_prompt: str) -> str:
                 ],
                 "model": AI_MODEL,
                 "temperature": AI_TEMPERATURE,
-                "max_tokens": 150
+                "max_tokens": 80  # ~280 chars limit
             }
             
             headers = {
@@ -167,13 +167,12 @@ def call_ai(system_prompt: str, user_prompt: str) -> str:
             ai_response = re.sub(r'\s*\(\d+\s*chars?\)\s*$', '', ai_response)
             ai_response = ai_response.strip()
             
-            # Accept 240-280 chars (reject if too short OR too long)
+            # STRICT: Accept ONLY 240-280 chars (retry if too short OR too long)
             if 240 <= len(ai_response) <= 280:
                 break
             elif len(ai_response) > 280:
-                print(f"Response too long ({len(ai_response)} chars). Truncating to 280...")
-                ai_response = ai_response[:277] + "..."  # Truncate with ellipsis
-                break
+                print(f"Response too long ({len(ai_response)} chars). REFUSING to post. Retrying...")
+                formatted_prompt += f"\n\nFEEDBACK: Your last output was {len(ai_response)} chars. That's TOO LONG. Twitter limit is 280. Shorten it to 240-280 chars."
             else:
                 print(f"Response too short ({len(ai_response)} chars). Retrying...")
                 formatted_prompt += f"\n\nFEEDBACK: Your last output was only {len(ai_response)} chars. It MUST be 240-280 chars. Write MORE detail."
