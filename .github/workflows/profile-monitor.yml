@@ -34,7 +34,6 @@ jobs:
       - name: Process events with AI
         if: steps.fetch_events.outputs.has_events == 'true'
         env:
-          GITHUB_EVENT_PATH: current_event.json
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           ACESS_TOKEN: ${{ secrets.ACESS_TOKEN }}
@@ -42,7 +41,7 @@ jobs:
           X_API_KEY: ${{ secrets.X_API_KEY }}
           X_API_KEY_SECRET: ${{ secrets.X_API_KEY_SECRET }}
         run: |
-          python agent.py
+          python agent.py current_event.json
       
       - name: Upload logs (on failure)
         if: failure()

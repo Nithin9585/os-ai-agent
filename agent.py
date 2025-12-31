@@ -17,7 +17,7 @@ from urllib.parse import quote
 from typing import Dict, Optional, Tuple
 
 # Configuration
-GITHUB_EVENT_PATH = os.getenv("GITHUB_EVENT_PATH")
+GITHUB_EVENT_PATH = sys.argv[1] if len(sys.argv) > 1 else os.getenv("GITHUB_EVENT_PATH")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 AI_API_KEY = os.getenv("GEMINI_API_KEY")
 
