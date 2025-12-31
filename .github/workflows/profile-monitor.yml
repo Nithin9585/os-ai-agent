@@ -41,6 +41,7 @@ jobs:
           X_API_KEY: ${{ secrets.X_API_KEY }}
           X_API_KEY_SECRET: ${{ secrets.X_API_KEY_SECRET }}
         run: |
+          # Pass event file as argument
           python agent.py current_event.json
       
       - name: Upload logs (on failure)
