@@ -212,7 +212,8 @@ def post_to_x(tweet_text: str) -> bool:
         
         headers = {
             "Authorization": auth_header,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "User-Agent": "OpenSourceAIAgent/1.0 (Python)"
         }
         
         print("Posting to X...")
