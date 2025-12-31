@@ -19,7 +19,7 @@ from typing import Dict, Optional, Tuple
 # Configuration
 GITHUB_EVENT_PATH = sys.argv[1] if len(sys.argv) > 1 else os.getenv("GITHUB_EVENT_PATH")
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
-AI_API_KEY = os.getenv("GEMINI_API_KEY")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 # X API OAuth 1.0a credentials
 X_ACCESS_TOKEN = os.getenv("ACESS_TOKEN")
@@ -27,10 +27,10 @@ X_ACCESS_TOKEN_SECRET = os.getenv("ACESS_TOKEN_SECRET")
 X_CONSUMER_KEY = os.getenv("X_API_KEY")
 X_CONSUMER_SECRET = os.getenv("X_API_KEY_SECRET")
 
-# AI API Configuration (Google Gemini)
-AI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"
-AI_MODEL = "gemini-2.5-flash"
-AI_TEMPERATURE = 0.7
+# AI API Configuration (OpenRouter with DeepSeek)
+AI_API_URL = "https://openrouter.ai/api/v1/chat/completions"
+AI_MODEL = "deepseek/deepseek-chat"
+AI_TEMPERATURE = 0.8
 
 # X API Configuration
 X_API_URL = "https://api.twitter.com/2/tweets"
@@ -41,7 +41,7 @@ def validate_environment() -> None:
     required_vars = {
         "GITHUB_EVENT_PATH": GITHUB_EVENT_PATH,
         "GITHUB_TOKEN": GITHUB_TOKEN,
-        "GEMINI_API_KEY": AI_API_KEY,
+        "OPENROUTER_API_KEY": OPENROUTER_API_KEY,
         "ACESS_TOKEN": X_ACCESS_TOKEN,
         "ACESS_TOKEN_SECRET": X_ACCESS_TOKEN_SECRET,
         "X_API_KEY": X_CONSUMER_KEY,
@@ -134,36 +134,49 @@ def load_system_prompt() -> str:
 def call_ai(system_prompt: str, user_prompt: str) -> str:
     """Call AI API to analyze the event and generate response."""
     try:
-        combined_prompt = f"{system_prompt}\n\n{user_prompt}\n\nREMINDER: Output MUST be long (approx 280 chars). Do not be brief."
+        formatted_prompt = system_prompt.replace("{input_data}", user_prompt)
         
         # Retry loop for length (Max 2 retries)
         for i in range(2):
             payload = {
-                "contents": [{"parts": [{"text": combined_prompt}]}],
-                "generationConfig": {
-                    "temperature": AI_TEMPERATURE,
-                    "maxOutputTokens": 600
-                }
+                "messages": [
+                    {"role": "system", "content": formatted_prompt},
+                    {"role": "user", "content": "Write the tweet now. Remember: 240-280 characters."}
+                ],
+                "model": AI_MODEL,
+                "temperature": AI_TEMPERATURE,
+                "max_tokens": 150
             }
             
             headers = {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {OPENROUTER_API_KEY}"
             }
             
-            api_url_with_key = f"{AI_API_URL}?key={AI_API_KEY}"
-            
-            print(f"Calling Gemini AI API (Attempt {i+1})...")
-            response = requests.post(api_url_with_key, headers=headers, json=payload, timeout=30)
+            print(f"Calling OpenRouter API (Attempt {i+1})...")
+            response = requests.post(AI_API_URL, headers=headers, json=payload, timeout=30)
             response.raise_for_status()
             
             result = response.json()
-            ai_response = result["candidates"][0]["content"]["parts"][0]["text"].strip()
+            ai_response = result["choices"][0]["message"]["content"].strip()
             
-            if len(ai_response) >= 240:
+            # Clean up: remove quotes and metadata
+            ai_response = ai_response.strip('"\'')  # Remove surrounding quotes
+            # Remove character count annotations like "(280 chars)"
+            import re
+            ai_response = re.sub(r'\s*\(\d+\s*chars?\)\s*$', '', ai_response)
+            ai_response = ai_response.strip()
+            
+            # Accept 240-280 chars (reject if too short OR too long)
+            if 240 <= len(ai_response) <= 280:
+                break
+            elif len(ai_response) > 280:
+                print(f"Response too long ({len(ai_response)} chars). Truncating to 280...")
+                ai_response = ai_response[:277] + "..."  # Truncate with ellipsis
                 break
             else:
                 print(f"Response too short ({len(ai_response)} chars). Retrying...")
-                combined_prompt += "\n\nFEEDBACK: Too short! Follow the STRUCTURE from the prompt. Each section must be filled. Aim for 250-280 chars total."
+                formatted_prompt += f"\n\nFEEDBACK: Your last output was only {len(ai_response)} chars. It MUST be 240-280 chars. Write MORE detail."
         
         print("-" * 40)
         print(f"FULL TWEET:\n{ai_response}")

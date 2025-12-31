@@ -35,7 +35,7 @@ jobs:
         if: steps.fetch_events.outputs.has_events == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           ACESS_TOKEN: ${{ secrets.ACESS_TOKEN }}
           ACESS_TOKEN_SECRET: ${{ secrets.ACESS_TOKEN_SECRET }}
           X_API_KEY: ${{ secrets.X_API_KEY }}
