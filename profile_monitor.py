@@ -174,7 +174,10 @@ def main():
     with open(event_file, "w") as f:
         json.dump(agent_event, f, indent=2)
     
-    save_state(latest_event["created_at"])
+    # Save event timestamp for later (agent will save state on success)
+    timestamp_file = "event_timestamp.txt"
+    with open(timestamp_file, "w") as f:
+        f.write(latest_event["created_at"])
     
     os.environ["GITHUB_EVENT_PATH"] = event_file
     

@@ -276,6 +276,21 @@ Link: {link}
     success = post_to_x(ai_response)
     
     if success:
+        # Save state only after successful posting
+        try:
+            timestamp_file = "event_timestamp.txt"
+            if os.path.exists(timestamp_file):
+                with open(timestamp_file, "r") as f:
+                    timestamp = f.read().strip()
+                
+                state_file = "last_processed.json"
+                with open(state_file, "w") as f:
+                    json.dump({"last_timestamp": timestamp}, f)
+                
+                print(f"State saved: {timestamp}")
+        except Exception as e:
+            print(f"WARNING: Failed to save state: {e}")
+        
         print("=" * 60)
         print("Agent completed successfully!")
         print("=" * 60)
