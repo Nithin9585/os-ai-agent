@@ -21,7 +21,7 @@ def load_state():
         with open(STATE_FILE, "r") as f:
             return json.load(f)
     except FileNotFoundError:
-        return {"last_timestamp": (datetime.utcnow() - timedelta(hours=1)).isoformat()}
+        return {"last_timestamp": (datetime.utcnow() - timedelta(hours=1)).isoformat() + "Z"}
 
 
 def save_state(timestamp):
