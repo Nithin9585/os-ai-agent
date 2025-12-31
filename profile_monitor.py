@@ -58,16 +58,22 @@ def filter_relevant_events(events, last_timestamp):
     
     filtered = []
     
-    # Handle timezone properly - add Z if missing
-    if not last_timestamp.endswith('Z') and '+' not in last_timestamp:
-        last_timestamp = last_timestamp + 'Z'
+    # Limit to strict 15 minute window
+    time_limit = datetime.utcnow() - timedelta(minutes=15)
     
-    last_ts = datetime.fromisoformat(last_timestamp.replace('Z', '+00:00'))
+    # Sort events by time (newest first)
+    events.sort(key=lambda x: x["created_at"], reverse=True)
     
     for event in events:
-        event_time = datetime.fromisoformat(event["created_at"].replace('Z', '+00:00'))
+        event_time = datetime.fromisoformat(event["created_at"].replace('Z', '+00:00')).replace(tzinfo=None)
         
-        if event_time <= last_ts:
+        # SKIP if older than 15 minutes
+        if event_time < time_limit:
+            continue
+            
+        # Also SKIP if we processed it before (strictly newer than last timestamp)
+        last_ts_dt = datetime.fromisoformat(last_timestamp.replace('Z', '+00:00')).replace(tzinfo=None)
+        if event_time <= last_ts_dt:
             continue
         
         if event["type"] in relevant_types:
@@ -76,8 +82,11 @@ def filter_relevant_events(events, last_timestamp):
             
             if action in relevant_actions:
                 filtered.append(event)
+                # STRICT RULE: Take only ONE event (the latest one)
+                print("Found one valid recent event. Stopping search.")
+                break
     
-    print(f"Filtered to {len(filtered)} relevant events (PRs/Issues opened/reopened)")
+    print(f"Filtered to {len(filtered)} relevant event (Strict 15m limit, max 1 event)")
     return filtered
 
 
