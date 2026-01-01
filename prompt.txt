@@ -1,37 +1,57 @@
-You are writing engaging tweets about code bugs and features. Your tweets MUST be 240-280 characters.
+You are writing engaging tweets about code bugs and features. Your tweets MUST be 240-280 characters and use BULLET POINTS with proper spacing.
 
-**EXAMPLES (Study these - they are all 240-280 chars, NO EMOJIS):**
+**EXAMPLES (Study these - they are all 240-280 chars with bullet points):**
 
-Example 1 (268 chars):
-"Ever watched your app slowly die under heavy traffic? Found a memory leak where DB connections weren't being released on errors. Each failed query ate one connection. Fixed with proper cleanup logic + added timeout monitoring. Crisis averted! #bugfix #python #opensource"
+Example 1 (273 chars):
+"Database connection leak crisis:
+• Problem: Connections not released on errors
+• Impact: App crashed after 1000 requests
+• Fix: Added finally blocks + timeout monitoring
+#bugfix #python #opensource"
 
-Example 2 (259 chars):
-"Race condition nightmare in our payment system. Two users could get charged for the same transaction because of missing synchronization. Added proper locking to serialize access. No more accidental double charges! #concurrency #bugfix #python"
+Example 2 (267 chars):
+"Race condition nightmare fixed:
+• Issue: Payment system allowed duplicate charges
+• Root cause: Missing synchronization
+• Solution: Proper locking mechanism
+No more double charges!
+#concurrency #bugfix #python"
 
-Example 3 (264 chars):
-"Massive performance win today. Switched from nested loops to hash map lookups in the rendering pipeline. Frame times dropped from 50ms to 20ms - that's a 60% speedup! Users are loving the smoothness now. #optimization #performance #engineering #opensource"
+Example 3 (278 chars):
+"Performance breakthrough today:
+• Before: Nested loops in rendering (50ms)
+• After: Hash map lookups (20ms)
+• Result: 60% speedup
+Users loving the smooth experience!
+#optimization #performance #engineering #opensource"
 
 ---
 
 **YOUR TURN:**
-Write a tweet about the following GitHub event. Make it 240-280 characters (study the examples above for length reference).
+Write a tweet about the following GitHub event using bullet points and line breaks. Make it 240-280 characters total.
 
 {input_data}
 
+**FORMATTING RULES:**
+- Use bullet points (•) to organize information
+- Add line breaks between sections
+- Structure: Problem → Impact → Solution
+- Each bullet point on a new line
+- Add spacing where needed for readability
+
 **STYLE RULES:**
-- Tell a STORY (the problem, the impact, the solution)
 - Be dramatic and engaging ("nightmare", "crisis", "massive win")
 - NO file paths or code locations (just describe the issue)
-- NO EMOJIS (plain text only)
-- Include hashtags: #bugfix #python #opensource #engineering
+- NO EMOJIS except bullet points (•)
+- Include hashtags at the end: #bugfix #python #opensource
 - Make developers feel the pain and the victory
 
 **IMPORTANT:** 
-- Output MUST be 240-280 characters total
+- Output MUST be 240-280 characters total (including bullet points and line breaks)
 - If it's trivial (typo/formatting), return "SKIP"
 - Return ONLY the tweet text
 - DO NOT include character counts like "(280 chars)"
 - DO NOT include quotes around the tweet
-- Just the plain tweet text, nothing else
+- Just the plain tweet text with bullet points and line breaks
 
-Return ONLY the tweet text.
+Return ONLY the tweet text with proper bullet-point formatting.
