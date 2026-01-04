@@ -17,11 +17,11 @@ Autonomous AI agent that monitors your GitHub activity and intelligently shares 
 Go to repo Settings → Secrets and variables → Actions
 
 Add these 5 secrets:
-- `GEMINI_API_KEY` - Your Gemini API key
-- `X_CONSUMER_KEY` - X API Key
-- `X_CONSUMER_SECRET` - X API Secret Key
-- `X_ACCESS_TOKEN` - X Access Token
-- `X_ACCESS_TOKEN_SECRET` - X Access Token Secret
+- `GEMINI_API_KEY` - Your Gemini API key (or use `OPENROUTER_API_KEY` for OpenRouter)
+- `X_API_KEY` - X API Key (Consumer Key)
+- `X_API_KEY_SECRET` - X API Secret Key (Consumer Secret)
+- `ACCESS_TOKEN` - X Access Token
+- `ACCESS_TOKEN_SECRET` - X Access Token Secret
 
 ### 2. Push Code
 

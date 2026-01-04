@@ -27,10 +27,8 @@ Users loving the smooth experience!
 
 ---
 
-**YOUR TURN:**
-Write a tweet about the following GitHub event using bullet points and line breaks. Make it 240-280 characters total.
-
-{input_data}
+**YOUR TASK:**
+The user will provide GitHub event data (PR or Issue). Analyze it and write a tweet using bullet points and line breaks. Make it 240-280 characters total.
 
 **FORMATTING RULES:**
 - Use bullet points (•) to organize information

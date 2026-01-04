@@ -22,8 +22,8 @@ GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 # X API OAuth 1.0a credentials
-X_ACCESS_TOKEN = os.getenv("ACESS_TOKEN")
-X_ACCESS_TOKEN_SECRET = os.getenv("ACESS_TOKEN_SECRET")
+X_ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
+X_ACCESS_TOKEN_SECRET = os.getenv("ACCESS_TOKEN_SECRET")
 X_CONSUMER_KEY = os.getenv("X_API_KEY")
 X_CONSUMER_SECRET = os.getenv("X_API_KEY_SECRET")
 
@@ -42,8 +42,8 @@ def validate_environment() -> None:
         "GITHUB_EVENT_PATH": GITHUB_EVENT_PATH,
         "GITHUB_TOKEN": GITHUB_TOKEN,
         "OPENROUTER_API_KEY": OPENROUTER_API_KEY,
-        "ACESS_TOKEN": X_ACCESS_TOKEN,
-        "ACESS_TOKEN_SECRET": X_ACCESS_TOKEN_SECRET,
+        "ACCESS_TOKEN": X_ACCESS_TOKEN,
+        "ACCESS_TOKEN_SECRET": X_ACCESS_TOKEN_SECRET,
         "X_API_KEY": X_CONSUMER_KEY,
         "X_API_KEY_SECRET": X_CONSUMER_SECRET,
     }
@@ -131,17 +131,20 @@ def load_system_prompt() -> str:
         sys.exit(1)
 
 
-def call_ai(system_prompt: str, user_prompt: str) -> str:
-    """Call AI API to analyze the event and generate response."""
+def call_ai(system_prompt: str, event_data: str) -> str:
+    """Call AI API to analyze the event and generate response.
+    
+    SECURITY: event_data contains untrusted user input and is kept separate 
+    from system prompt to prevent prompt injection attacks.
+    """
     try:
-        formatted_prompt = system_prompt.replace("{input_data}", user_prompt)
-        
         # Retry loop for length (Max 2 retries)
+        feedback = ""
         for i in range(2):
             payload = {
                 "messages": [
-                    {"role": "system", "content": formatted_prompt},
-                    {"role": "user", "content": "Write the tweet now. Remember: 240-280 characters."}
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": f"Here is the GitHub event data to analyze:\n\n{event_data}\n\nWrite the tweet now. Remember: 240-280 characters.{feedback}"}
                 ],
                 "model": AI_MODEL,
                 "temperature": AI_TEMPERATURE,
@@ -172,10 +175,10 @@ def call_ai(system_prompt: str, user_prompt: str) -> str:
                 break
             elif len(ai_response) > 280:
                 print(f"Response too long ({len(ai_response)} chars). REFUSING to post. Retrying...")
-                formatted_prompt += f"\n\nFEEDBACK: Your last output was {len(ai_response)} chars. That's TOO LONG. Twitter limit is 280. Shorten it to 240-280 chars."
+                feedback = f"\n\nFEEDBACK: Your last output was {len(ai_response)} chars. That's TOO LONG. Twitter limit is 280. Shorten it to 240-280 chars."
             else:
                 print(f"Response too short ({len(ai_response)} chars). Retrying...")
-                formatted_prompt += f"\n\nFEEDBACK: Your last output was only {len(ai_response)} chars. It MUST be 240-280 chars. Write MORE detail."
+                feedback = f"\n\nFEEDBACK: Your last output was only {len(ai_response)} chars. It MUST be 240-280 chars. Write MORE detail."
         
         print("-" * 40)
         print(f"FULL TWEET:\n{ai_response}")
